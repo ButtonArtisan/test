@@ -39,15 +39,16 @@
       transform: scale(0.5);
       transform-origin: center center;
     }
-
-    .workshop-toggle {
-      z-index: 3;
-      left: 50%;
-      top: calc(50% + 43vh);
-      width: 120px;
-      height: 44px;
-      transform: translateX(-50%);
-    }
+.workshop-toggle {
+  position: absolute;
+  z-index: 3;
+  top: 76%;
+  left: 50%;
+  width: 120px;
+  height: 44px;
+  transform: translateX(-50%);
+  border: 0;
+}
 
     .workshop.closed {
       display: none;

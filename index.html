@@ -36,6 +36,20 @@
       transform: scale(0.5);
       transform-origin: center center;
     }
+
+    .workshop-toggle {
+      z-index: 3;
+      inset: auto;
+      left: 50%;
+      bottom: 20px;
+      width: 120px;
+      height: 44px;
+      transform: translateX(-50%);
+    }
+
+    .workshop.closed {
+      display: none;
+    }
   </style>
 </head>
 
@@ -51,5 +65,23 @@
     src="workshop/index.html"
     title="Workshop">
   </iframe>
+
+  <iframe
+    class="workshop-toggle"
+    src="toggle.html"
+    title="Toggle Workshop">
+  </iframe>
+
+  <script>
+    window.addEventListener("message", event => {
+      if (event.origin !== window.location.origin) return;
+
+      if (event.data?.type === "toggle-workshop") {
+        document
+          .querySelector(".workshop")
+          .classList.toggle("closed");
+      }
+    });
+  </script>
 </body>
 </html>

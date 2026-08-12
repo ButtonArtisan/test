@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workshop Toggle</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+    }
+
+    button {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="toggle" aria-label="Open or close workshop"></button>
+
+  <script>
+    document.getElementById("toggle").onclick = () => {
+      window.parent.postMessage(
+        { type: "toggle-workshop" },
+        window.location.origin
+      );
+    };
+  </script>
+</body>
+</html>

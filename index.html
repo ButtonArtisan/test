@@ -1,143 +1,36 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Vertical GIF Maker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Code Editing Tool</title>
   <style>
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;background:#edf4f0;color:#18241e;font-family:Arial,sans-serif;display:grid;place-items:center;padding:18px}
-    main{width:min(420px,100%);background:#fffdf7;border:1px solid #cbd8ce;border-radius:24px;padding:14px;box-shadow:0 12px 35px #78908024}
-    h1{margin:0 0 12px;font-size:22px;letter-spacing:-.7px;text-align:center}
-    input{display:none}
-    .controls{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-    label,.button{display:block;width:100%;border:0;border-radius:15px;background:#244b35;color:white;text-align:center;padding:14px 8px;font-size:15px;font-weight:bold;cursor:pointer}
-    .button{margin-top:0;background:#c95d45;text-decoration:none}
-    .button[aria-disabled="true"]{opacity:.4;pointer-events:none}
-    video, img{display:block;width:100%;max-height:390px;object-fit:contain;background:#101612;border-radius:16px;margin-top:18px}
-    .timeline{display:none;margin-top:12px}
-    .timeline input{display:block;width:100%;height:28px;accent-color:#c95d45}
-    .time-readout{display:flex;justify-content:space-between;color:#68766d;font-size:13px;margin-top:2px}
-    #result{display:none}
-    #status{min-height:24px;margin-top:15px;text-align:center;color:#53655a;font-size:14px}
-    small{display:block;text-align:center;color:#87938a;margin-top:13px;line-height:1.4}
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
   </style>
 </head>
 <body>
-<main>
-  <h1>Vertical GIF Maker</h1>
-  <div class="controls">
-    <label for="videoInput">Upload Video</label>
-  <button id="make" class="button" type="button" disabled>Make GIF</button>
-  </div>
-  <input id="videoInput" type="file" accept="video/*">
-
-  <video id="preview" controls playsinline></video>
-  <div id="timeline" class="timeline">
-    <input id="playhead" type="range" min="0" max="0" step="0.01" value="0" aria-label="Choose GIF start point">
-    <div class="time-readout"><span id="startTime">Start: 0.0s</span><span id="endTime">End: 5.0s</span></div>
-  </div>
-
-  <div id="status">No video selected.</div>
-  <div id="result">
-    <img id="gifPreview" alt="Finished animated GIF">
-    <a id="save" class="button" download="five-second-loop.gif" href="#">Save .gif to Files</a>
-  </div>
-  <small>First 5 seconds · 10 FPS · loops forever</small>
-</main>
-
-<!-- gif.js does the GIF encoding in the browser. Nothing is uploaded by this page. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
-<script>
-const input = document.querySelector('#videoInput');
-const video = document.querySelector('#preview');
-const make = document.querySelector('#make');
-const status = document.querySelector('#status');
-const result = document.querySelector('#result');
-const gifPreview = document.querySelector('#gifPreview');
-const save = document.querySelector('#save');
-const timeline = document.querySelector('#timeline');
-const playhead = document.querySelector('#playhead');
-const startTime = document.querySelector('#startTime');
-const endTime = document.querySelector('#endTime');
-let videoUrl = '';
-let finishedGifUrl = '';
-
-input.addEventListener('change', () => {
-  const file = input.files[0];
-  if (!file) return;
-  if (videoUrl) URL.revokeObjectURL(videoUrl);
-  videoUrl = URL.createObjectURL(file);
-  video.src = videoUrl;
-  video.load();
-  make.disabled = false;
-  video.onloadedmetadata = () => {
-    const maxStart = Math.max(0, video.duration - 5);
-    playhead.max = maxStart.toFixed(2);
-    playhead.value = 0;
-    timeline.style.display = 'block';
-    updateTimeline();
-  };
-  result.style.display = 'none';
-  status.textContent = 'Video ready. Tap Make GIF.';
-});
-
-make.addEventListener('click', async () => {
-  if (finishedGifUrl) {
-    save.click();
-    return;
-  }
-  if (!video.videoWidth) { status.textContent = 'Please wait for the video preview to load.'; return; }
-  make.disabled = true;
-  make.textContent = 'Making GIF…';
-  status.textContent = 'Reading selected 5 seconds… 0%';
-  const maxWidth = 480;
-  const scale = Math.min(1, maxWidth / video.videoWidth);
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.round(video.videoWidth * scale);
-  canvas.height = Math.round(video.videoHeight * scale);
-  const ctx = canvas.getContext('2d', {alpha:false});
-  const gif = new GIF({workers:2, quality:12, width:canvas.width, height:canvas.height, repeat:0, workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'});
-  const start = Number(playhead.value);
-  const duration = Math.min(5, Math.max(0.1, (video.duration || 5) - start));
-  const fps = 10;
-  const delay = 1000 / fps;
-  for (let t = 0; t < duration; t += 1 / fps) {
-    await seek(start + t);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    gif.addFrame(ctx, {copy:true, delay});
-    status.textContent = 'Reading selected video… ' + Math.min(50, Math.round((t / duration) * 50)) + '%';
-  }
-  gif.on('progress', p => status.textContent = 'Encoding GIF… ' + (50 + Math.round(p * 50)) + '%');
-  gif.on('finished', blob => {
-    const url = URL.createObjectURL(blob);
-    finishedGifUrl = url;
-    gifPreview.src = url;
-    save.href = url;
-    result.style.display = 'block';
-    status.textContent = 'Done — 100%. Your GIF is ready to save.';
-    make.textContent = 'Save GIF';
-    make.disabled = false;
-  });
-  gif.render();
-});
-
-playhead.addEventListener('input', updateTimeline);
-function updateTimeline() {
-  const start = Number(playhead.value || 0);
-  startTime.textContent = 'Start: ' + start.toFixed(1) + 's';
-  endTime.textContent = 'End: ' + Math.min(video.duration || 5, start + 5).toFixed(1) + 's';
-}
-
-function seek(time) {
-  return new Promise(resolve => {
-    const target = Math.min(time, Math.max(0, video.duration - .001));
-    if (Math.abs(video.currentTime - target) < .01) { resolve(); return; }
-    const done = () => { video.removeEventListener('seeked', done); resolve(); };
-    video.addEventListener('seeked', done);
-    video.currentTime = target;
-  });
-}
-</script>
+  <iframe
+    src="main-background.txt"
+    title="Main background"
+    loading="eager">
+  </iframe>
 </body>
 </html>

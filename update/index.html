@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Replace-Erase</title>
+
+  <script>
+    window.RE_VERSION = Date.now();
+
+    window.RE_CSS_FILES = [
+      "CSS/1-overall-layout-logic.css",
+      "CSS/2-ready-button.css",
+      "CSS/3-2nd-page.css",
+      "CSS/4-start-art.css",
+      "CSS/5-faded-logo.css",
+      "CSS/6-action-toolbar.css",
+      "CSS/7-tapping-logic.css",
+      "CSS/8-separated-blocks.css",
+      "CSS/9-text-editing.css",
+      "CSS/10-swipe-bar.css",
+      "CSS/11-copy-button.css",
+      "CSS/12-minimize-logic.css",
+      "CSS/13-front-page.css"
+    ];
+
+    window.RE_CSS_FILES.forEach(file => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = file + "?v=" + window.RE_VERSION;
+      document.head.appendChild(link);
+    });
+  </script>
+</head>
+
+<body>
+  <div id="canvas" class="canvas">
+
+    <pre id="codeView" class="code-view hidden"></pre>
+
+    <div id="scene" class="scene">
+
+      <!-- app.js / JS files should control only this -->
+      <div id="stack" class="stack"></div>
+
+    </div>
+
+    <div id="status" class="status">Ready</div>
+
+  </div>
+
+  <script>
+    window.RE_JS_FILES = [
+      "JS/1-pasted-code.js",
+      "JS/2-start-page.js",
+      "JS/3-cleanup.js",
+      "JS/4-separator.js",
+      "JS/5-undo-logic.js",
+      "JS/6-finalbuild.js",
+      "JS/7-tap-actions.js",
+      "JS/8-and-button.js",
+      "JS/9-text-editing.js",
+      "JS/10-toolbar.js",
+      "JS/11-add-block.js",
+      "JS/12-functions-logic.js",
+      "JS/13-functions-menu.js",
+      "JS/14-show-parts.js",
+      "JS/15-opening-page.js",
+      "JS/16-brown-letter-sections.js",
+      "JS/17-brown-rename-focus.js",
+      "undoredo/undo.js",
+      "undoredo/redo.js"
+    ];
+
+    function loadScript(file){
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = file + "?v=" + window.RE_VERSION;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("Could not load " + file));
+        document.body.appendChild(script);
+      });
+    }
+
+    async function loadReplaceErase(){
+      try{
+        for (const file of window.RE_JS_FILES){
+          await loadScript(file);
+        }
+
+        window.dispatchEvent(new Event("replaceEraseLoaded"));
+      }catch(err){
+        console.error(err);
+
+        const status = document.getElementById("status");
+        if (status) status.textContent = "Load error";
+      }
+    }
+
+    loadReplaceErase();
+  </script>
+</body>
+</html>

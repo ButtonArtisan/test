@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Toggle</title>
+  <title>Code Editing Tool</title>
 
   <style>
     * {
@@ -15,32 +15,75 @@
       width: 100%;
       height: 100%;
       margin: 0;
-      background: transparent;
+      overflow: hidden;
+      background: #000;
     }
 
-    button {
+    iframe {
+      position: absolute;
+      border: 0;
+    }
+
+    .background {
+      inset: 0;
       width: 100%;
       height: 100%;
-      border: 1px solid #777;
-      border-radius: 8px;
-      background: #222;
-      color: white;
-      font: 16px system-ui, sans-serif;
-      cursor: pointer;
+      z-index: 1;
+    }
+
+    .workshop {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      transform: scale(0.5);
+      transform-origin: center center;
+    }
+
+    .workshop-toggle {
+      z-index: 3;
+      left: 50%;
+      top: calc(50% + 43vh);
+      width: 120px;
+      height: 44px;
+      transform: translateX(-50%);
+    }
+
+    .workshop.closed {
+      display: none;
     }
   </style>
 </head>
 
 <body>
-  <button id="toggle">Toggle</button>
+  <iframe
+    class="background"
+    src="main-background.html"
+    title="Main background">
+  </iframe>
+
+  <iframe
+    class="workshop"
+    src="workshop/index.html"
+    title="Workshop">
+  </iframe>
+
+  <iframe
+    class="workshop-toggle"
+    src="toggle.html"
+    title="Toggle Workshop">
+  </iframe>
 
   <script>
-    document.getElementById("toggle").onclick = () => {
-      window.parent.postMessage(
-        { type: "toggle-workshop" },
-        window.location.origin
-      );
-    };
+    window.addEventListener("message", event => {
+      if (event.origin !== window.location.origin) return;
+
+      if (event.data?.type === "toggle-workshop") {
+        document
+          .querySelector(".workshop")
+          .classList.toggle("closed");
+      }
+    });
   </script>
 </body>
 </html>

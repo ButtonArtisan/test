@@ -189,6 +189,9 @@ align-items:center;
 justify-content:center;
 transform-style:preserve-3d;
 position:relative;
+  background:transparent !important;
+  border:3px solid #000;
+}
 }
 
 .panel{

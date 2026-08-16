@@ -163,12 +163,14 @@ outline:none;
 }
 
 #wrap{
-flex:1;
-display:flex;
-justify-content:center;
-align-items:center;
-overflow:hidden;
-position:relative;
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  position:relative;
+  background:transparent;
+  border:3px solid #000;
 }
 
 .scene{

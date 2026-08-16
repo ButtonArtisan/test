@@ -8,7 +8,7 @@
 html,body{
 margin:0;
 height:100%;
-background:var(--lab-bg);
+background:transparent;
 display:flex;
 flex-direction:column-reverse;
 font-family:system-ui,sans-serif;
@@ -189,9 +189,6 @@ align-items:center;
 justify-content:center;
 transform-style:preserve-3d;
 position:relative;
-  background:transparent !important;
-  border:3px solid #000;
-}
 }
 
 .panel{

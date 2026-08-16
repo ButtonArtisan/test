@@ -152,6 +152,15 @@ font-size:14px;
 resize:none;
 outline:none;
 }
+#replace{
+  background:#353a42;
+  color:#fff;
+  box-shadow:0 0 8px rgba(0,0,0,.4);
+}
+
+#replace:active{
+  box-shadow:0 0 14px rgba(130,140,155,.35);
+}
 
 #wrap{
 flex:1;

@@ -498,3 +498,49 @@ box-shadow:
 .code-collect-btn:active{
 transform:scale(.96);
 }
+
+html,
+
+body{
+
+  background:transparent !important;
+
+}
+
+/* Full original preview box */
+
+#wrap{
+
+  background-color:transparent !important;
+
+  background-image:none !important;
+
+  border:3px solid #000 !important;
+
+}
+
+/* Do not let inner preview containers add a fill */
+
+.scene,
+
+.viewer,
+
+.panel,
+
+.panel iframe{
+
+  background-color:transparent !important;
+
+  background-image:none !important;
+
+}
+
+/* Remove the incorrect smaller viewer border */
+
+.viewer{
+
+  border:none !important;
+
+  outline:none !important;
+
+}

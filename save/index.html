@@ -1,0 +1,226 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code Saver</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #111;
+  font-family: Arial, sans-serif;
+}
+
+.wrap {
+  width: min(82vw, 340px);
+  text-align: center;
+}
+
+#paste,
+#title,
+#notes {
+  width: 150px;
+  height: 48px;
+  margin: 0 auto;
+  font: 900 18px Arial;
+}
+
+#paste {
+  padding: 0;
+  border: 3px solid #e32626;
+  border-radius: 8px;
+  background: transparent;
+  color: #e32626;
+}
+
+#saveForm {
+  margin: 0;
+  padding: 0;
+}
+
+#title {
+  display: none;
+  padding: 0 8px;
+  border: 3px solid #1769ff;
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: white;
+  text-align: center;
+  font: 900 18px Arial;
+  caret-color: transparent;
+}
+
+#title::placeholder {
+  color: #1769ff;
+  opacity: 1;
+}
+
+#title.notes-mode {
+  border-color: #20d866;
+}
+
+#title.notes-mode::placeholder {
+  color: #20d866;
+}
+
+#notes {
+  display: none;
+  padding: 0;
+  border: 3px solid #20d866;
+  border-radius: 8px;
+  background: transparent;
+  color: #20d866;
+}
+
+#status {
+  margin-top: 16px;
+  color: #999;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+
+<body>
+  <main class="wrap">
+
+    <button id="paste" type="button">PASTE</button>
+
+    <form id="saveForm">
+      <input
+        id="title"
+        type="text"
+        placeholder="TITLE"
+        autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="done"
+      >
+    </form>
+
+    <button id="notes" type="button">NOTES</button>
+
+    <div id="status"></div>
+
+  </main>
+
+<script>
+const pasteButton = document.querySelector("#paste");
+const saveForm = document.querySelector("#saveForm");
+const titleInput = document.querySelector("#title");
+const notesButton = document.querySelector("#notes");
+const status = document.querySelector("#status");
+
+let hiddenCode = "";
+let previousTitle = "";
+let notesMode = false;
+
+pasteButton.addEventListener("click", async () => {
+  try {
+    hiddenCode = await navigator.clipboard.readText();
+
+    if (!hiddenCode.trim()) {
+      status.textContent = "CLIPBOARD EMPTY";
+      return;
+    }
+
+    pasteButton.style.display = "none";
+    titleInput.style.display = "block";
+    titleInput.placeholder = "TITLE";
+    titleInput.classList.remove("notes-mode");
+    titleInput.focus();
+
+    status.textContent = "";
+
+  } catch {
+    status.textContent = "ALLOW CLIPBOARD ACCESS";
+  }
+});
+
+notesButton.addEventListener("click", () => {
+  notesMode = true;
+
+  notesButton.style.display = "none";
+  titleInput.style.display = "block";
+  titleInput.value = "";
+  titleInput.placeholder = "NOTES";
+  titleInput.classList.add("notes-mode");
+  titleInput.focus();
+
+  status.textContent = "";
+});
+
+saveForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  let filename;
+
+  if (notesMode) {
+    filename = `${previousTitle} (notes).txt`;
+  } else {
+    const cleanTitle = titleInput.value.trim()
+      .replace(/[<>:"/\\|?*]/g, "")
+      .replace(/\s+/g, "-") || "saved-code";
+
+    previousTitle = cleanTitle;
+    filename = `${cleanTitle}.txt`;
+  }
+
+  const file = new File(
+    [hiddenCode],
+    filename,
+    { type: "text/plain" }
+  );
+
+  try {
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({ files: [file] })
+    ) {
+      await navigator.share({
+        files: [file],
+        title: filename
+      });
+    } else {
+      downloadFile(file);
+    }
+  } catch {
+    downloadFile(file);
+  }
+
+  notesMode = false;
+  titleInput.value = "";
+  titleInput.placeholder = "TITLE";
+  titleInput.classList.remove("notes-mode");
+
+  titleInput.style.display = "none";
+  notesButton.style.display = "block";
+  status.textContent = "";
+});
+
+function downloadFile(file) {
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = file.name;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>

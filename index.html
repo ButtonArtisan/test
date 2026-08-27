@@ -39,16 +39,27 @@
       transform: scale(0.5);
       transform-origin: center center;
     }
-.workshop-toggle {
-  position: fixed;
-  inset: auto;
-  z-index: 999;
-  width: 120px;
-  height: 44px;
-  left: 50%;
-  top: 76%;
-  transform: translateX(-50%);
-}
+
+    .workshop-toggle {
+      position: fixed;
+      inset: auto;
+      z-index: 999;
+      width: 120px;
+      height: 44px;
+      left: 50%;
+      top: 76%;
+      transform: translateX(-50%);
+    }
+
+    .save-tool {
+      position: fixed;
+      z-index: 1000;
+      width: 120px;
+      height: 44px;
+      left: 50%;
+      top: 84%;
+      transform: translateX(-50%);
+    }
 
     .workshop.closed {
       display: none;
@@ -73,6 +84,12 @@
     class="workshop-toggle"
     src="toggle.html"
     title="Toggle Workshop">
+  </iframe>
+
+  <iframe
+    class="save-tool"
+    src="save/index.html"
+    title="Save Tool">
   </iframe>
 
   <script>

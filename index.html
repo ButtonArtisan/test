@@ -1,107 +1,108 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Code Editing Tool</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code Editing Tool</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-      background: #000;
-    }
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
 
-    iframe {
-      position: absolute;
-      border: 0;
-    }
+iframe {
+  position: fixed;
+  border: 0;
+}
 
-    .background {
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
+.background,
+.workshop {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
 
-    .workshop {
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 2;
-      transform: scale(0.5);
-      transform-origin: center center;
-    }
+.background {
+  z-index: 1;
+}
 
-    .workshop-toggle {
-      position: fixed;
-      inset: auto;
-      z-index: 999;
-      width: 120px;
-      height: 44px;
-      left: 50%;
-      top: 76%;
-      transform: translateX(-50%);
-    }
+.workshop {
+  z-index: 2;
+  transform: scale(.5);
+  transform-origin: center;
+}
 
-    .save-tool {
-      position: fixed;
-      z-index: 1000;
-      width: 120px;
-      height: 44px;
-      left: 50%;
-      top: 84%;
-      transform: translateX(-50%);
-    }
+.workshop-toggle,
+.save-tool {
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-    .workshop.closed {
-      display: none;
-    }
-  </style>
+.workshop-toggle {
+  z-index: 999;
+  width: 120px;
+  height: 44px;
+  top: 76%;
+}
+
+.save-tool {
+  z-index: 1000;
+  width: 150px;
+  height: 48px;
+  top: 84%;
+}
+
+.workshop.closed {
+  display: none;
+}
+</style>
 </head>
 
 <body>
-  <iframe
-    class="background"
-    src="main-background.html"
-    title="Main background">
-  </iframe>
 
-  <iframe
-    class="workshop"
-    src="workshop/index.html"
-    title="Workshop">
-  </iframe>
+<iframe
+  class="background"
+  src="main-background.html"
+  title="Main background">
+</iframe>
 
-  <iframe
-    class="workshop-toggle"
-    src="toggle.html"
-    title="Toggle Workshop">
-  </iframe>
+<iframe
+  class="workshop"
+  src="workshop/index.html"
+  title="Workshop">
+</iframe>
 
-  <iframe
-    class="save-tool"
-    src="save/index.html"
-    title="Save Tool">
-  </iframe>
+<iframe
+  class="workshop-toggle"
+  src="toggle.html"
+  title="Toggle Workshop">
+</iframe>
 
-  <script>
-    window.addEventListener("message", event => {
-      if (event.origin !== window.location.origin) return;
+<iframe
+  class="save-tool"
+  src="save/index.html"
+  title="Save Tool">
+</iframe>
 
-      if (event.data?.type === "toggle-workshop") {
-        document
-          .querySelector(".workshop")
-          .classList.toggle("closed");
-      }
-    });
-  </script>
+<script>
+window.addEventListener("message", event => {
+  if (event.origin !== location.origin) return;
+
+  if (event.data?.type === "toggle-workshop") {
+    document.querySelector(".workshop")
+      .classList.toggle("closed");
+  }
+});
+</script>
+
 </body>
 </html>

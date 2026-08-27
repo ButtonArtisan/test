@@ -2,26 +2,38 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Code Saver</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CodeSaver</title>
 
 <style>
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
+  width: 100%;
+  height: 100%;
   margin: 0;
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
+  overscroll-behavior: none;
   background: transparent;
+}
+
+body {
+  position: fixed;
+  inset: 0;
   font-family: Arial, sans-serif;
+  touch-action: none;
 }
 
 .wrap {
+  position: fixed;
+  top: 50%;
+  left: 50%;
   width: 100%;
   text-align: center;
+  transform: translate(-50%, -50%);
 }
 
 #paste,
@@ -92,26 +104,27 @@ body {
 </head>
 
 <body>
-  <main class="wrap">
 
-    <button id="paste" type="button">PASTE</button>
+<main class="wrap">
 
-    <form id="saveForm">
-      <input
-        id="title"
-        type="text"
-        placeholder="TITLE"
-        autocomplete="off"
-        spellcheck="false"
-        enterkeyhint="done"
-      >
-    </form>
+  <button id="paste" type="button">PASTE</button>
 
-    <button id="notes" type="button">NOTES</button>
+  <form id="saveForm">
+    <input
+      id="title"
+      type="text"
+      placeholder="TITLE"
+      autocomplete="off"
+      spellcheck="false"
+      enterkeyhint="done"
+    >
+  </form>
 
-    <div id="status"></div>
+  <button id="notes" type="button">NOTES</button>
 
-  </main>
+  <div id="status"></div>
+
+</main>
 
 <script>
 const pasteButton = document.querySelector("#paste");
@@ -124,11 +137,20 @@ let hiddenCode = "";
 let previousTitle = "";
 let notesMode = false;
 
+function lockPagePosition(){
+  window.scrollTo(0, 0);
+
+  if(window.visualViewport){
+    window.visualViewport.scrollTo(0, 0);
+  }
+}
+
 pasteButton.addEventListener("click", async () => {
+
   try {
     hiddenCode = await navigator.clipboard.readText();
 
-    if (!hiddenCode.trim()) {
+    if(!hiddenCode.trim()){
       status.textContent = "CLIPBOARD EMPTY";
       return;
     }
@@ -137,7 +159,14 @@ pasteButton.addEventListener("click", async () => {
     titleInput.style.display = "block";
     titleInput.placeholder = "TITLE";
     titleInput.classList.remove("notes-mode");
-    titleInput.focus();
+
+    lockPagePosition();
+
+    titleInput.focus({
+      preventScroll: true
+    });
+
+    lockPagePosition();
 
     status.textContent = "";
 
@@ -147,6 +176,7 @@ pasteButton.addEventListener("click", async () => {
 });
 
 notesButton.addEventListener("click", () => {
+
   notesMode = true;
 
   notesButton.style.display = "none";
@@ -154,19 +184,34 @@ notesButton.addEventListener("click", () => {
   titleInput.value = "";
   titleInput.placeholder = "NOTES";
   titleInput.classList.add("notes-mode");
-  titleInput.focus();
+
+  lockPagePosition();
+
+  titleInput.focus({
+    preventScroll: true
+  });
+
+  lockPagePosition();
 
   status.textContent = "";
 });
 
+titleInput.addEventListener("focus", () => {
+  lockPagePosition();
+});
+
 saveForm.addEventListener("submit", async event => {
+
   event.preventDefault();
 
   let filename;
 
-  if (notesMode) {
+  if(notesMode){
+
     filename = `${previousTitle} (notes).txt`;
-  } else {
+
+  }else{
+
     const cleanTitle = titleInput.value.trim()
       .replace(/[<>:"/\\|?*]/g, "")
       .replace(/\s+/g, "-") || "saved-code";
@@ -178,23 +223,29 @@ saveForm.addEventListener("submit", async event => {
   const file = new File(
     [hiddenCode],
     filename,
-    { type: "text/plain" }
+    {type: "text/plain"}
   );
 
   try {
-    if (
+
+    if(
       navigator.share &&
       navigator.canShare &&
-      navigator.canShare({ files: [file] })
-    ) {
+      navigator.canShare({files: [file]})
+    ){
+
       await navigator.share({
         files: [file],
         title: filename
       });
-    } else {
+
+    }else{
+
       downloadFile(file);
     }
-  } catch {
+
+  }catch{
+
     downloadFile(file);
   }
 
@@ -206,9 +257,12 @@ saveForm.addEventListener("submit", async event => {
   titleInput.style.display = "none";
   notesButton.style.display = "block";
   status.textContent = "";
+
+  lockPagePosition();
 });
 
-function downloadFile(file) {
+function downloadFile(file){
+
   const url = URL.createObjectURL(file);
   const link = document.createElement("a");
 
@@ -221,6 +275,17 @@ function downloadFile(file) {
 
   URL.revokeObjectURL(url);
 }
+
+window.addEventListener("scroll", lockPagePosition);
+
+if(window.visualViewport){
+
+  window.visualViewport.addEventListener(
+    "scroll",
+    lockPagePosition
+  );
+}
 </script>
+
 </body>
 </html>

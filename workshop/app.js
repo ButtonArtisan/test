@@ -333,8 +333,11 @@ rotY.oninput = updateRotation
 thick.oninput = updateThickness
 thick2.oninput = updateThickness
 
-artW.oninput = updateArtSize
-artH.oninput = updateArtSize
+if (artW) artW.oninput = updateArtSize
+if (artH) artH.oninput = updateArtSize
+
+if (artX) artX.oninput = updateArtPosition
+if (artY) artY.oninput = updateArtPosition
 
 artX.oninput = updateArtPosition
 artY.oninput = updateArtPosition

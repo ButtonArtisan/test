@@ -83,7 +83,7 @@ function renderLayers(layers, layerTransforms){
   let html = `
 <body style="
   margin:0;
-  background:#111;
+  background:transparent;
   height:100vh;
   width:100vw;
   display:flex;

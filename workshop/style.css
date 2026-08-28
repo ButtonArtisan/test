@@ -595,3 +595,37 @@ body {
   width: 100%;
   min-width: 720px;
 }
+
+/* Keep the renderer's original layout, then scale it as one piece */
+
+html,
+body {
+  width: 900px;
+  height: 650px;
+  min-width: 900px;
+  min-height: 650px;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  transform-origin: top left;
+}
+
+#bar {
+  width: 900px;
+}
+
+.row {
+  flex-wrap: nowrap;
+}
+
+#wrap {
+  width: 900px;
+  height: 100%;
+}
+
+.scene {
+  width: 900px;
+  height: 650px;
+}

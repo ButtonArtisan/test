@@ -112,5 +112,17 @@ if (!window.location.search.includes("r=")) {
 <script src="renderer.js"></script>
 
 <script src="app.js"></script>
+  <script>
+function fitRenderer() {
+  const scaleX = window.innerWidth / 900;
+  const scaleY = window.innerHeight / 650;
+  const scale = Math.min(scaleX, scaleY);
+
+  document.body.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener("resize", fitRenderer);
+fitRenderer();
+</script>
 </body>
 </html>

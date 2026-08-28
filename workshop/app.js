@@ -9,7 +9,82 @@ const bgBtn = document.getElementById("bg")
 const codeOptions = document.getElementById("codeOptions")
 const toggleLayout = document.getElementById("toggleLayout")
 const saveArt = document.getElementById("saveArt")
+const previewTouchArea =
+  document.getElementById("previewTouchArea")
 
+let previewDragging = false
+let previewMoved = false
+let previewStartX = 0
+let previewStartY = 0
+let previewStartW = 0
+let previewStartH = 0
+let previewRatio = 1
+
+function getPreviewSize() {
+  const t = currentLayer
+    ? layerTransforms[currentLayer]
+    : {}
+
+  const size = currentLayer
+    ? inferSize(layers[currentLayer] || "", t)
+    : {w: "700px", h: "700px"}
+
+  return {
+    w: parseFloat(size.w) || 700,
+    h: parseFloat(size.h) || 700
+  }
+}
+
+previewTouchArea.addEventListener("pointerdown", event => {
+  if (!currentLayer || !layers[currentLayer]) return
+
+  const size = getPreviewSize()
+
+  previewDragging = true
+  previewMoved = false
+  previewStartX = event.clientX
+  previewStartY = event.clientY
+  previewStartW = size.w
+  previewStartH = size.h
+  previewRatio = size.w / size.h
+
+  previewTouchArea.setPointerCapture(event.pointerId)
+})
+
+previewTouchArea.addEventListener("pointermove", event => {
+  if (!previewDragging || !currentLayer) return
+
+  const dx = event.clientX - previewStartX
+  const dy = event.clientY - previewStartY
+
+  if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+    previewMoved = true
+  }
+
+  const dragAmount = (dx + dy) / 2
+  const newW = Math.max(120, previewStartW + dragAmount)
+  const newH = Math.max(120, newW / previewRatio)
+
+  layerTransforms[currentLayer].w = Math.round(newW)
+  layerTransforms[currentLayer].h = Math.round(newH)
+
+  renderLayers(layers, layerTransforms)
+})
+
+previewTouchArea.addEventListener("pointerup", event => {
+  if (!previewDragging) return
+
+  previewDragging = false
+  previewTouchArea.releasePointerCapture(event.pointerId)
+
+  if (!previewMoved) {
+    panel.classList.toggle("preview-fullscreen")
+  }
+})
+
+previewTouchArea.addEventListener("pointercancel", () => {
+  previewDragging = false
+})
 const thick = document.getElementById("thick")
 const thick2 = document.getElementById("thick2")
 

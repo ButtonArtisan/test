@@ -77,9 +77,20 @@ previewTouchArea.addEventListener("pointerup", event => {
   previewDragging = false
   previewTouchArea.releasePointerCapture(event.pointerId)
 
-  if (!previewMoved) {
+if (!previewMoved) {
+  const isFullscreen =
     panel.classList.toggle("preview-fullscreen")
-  }
+
+  window.parent.postMessage(
+    {
+      type: isFullscreen
+        ? "preview-fullscreen"
+        : "preview-normal"
+    },
+    window.location.origin
+  )
+}
+
 })
 
 previewTouchArea.addEventListener("pointercancel", () => {

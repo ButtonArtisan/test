@@ -629,3 +629,30 @@ body {
   width: 900px;
   height: 650px;
 }
+
+#previewTouchArea {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  cursor: grab;
+  touch-action: none;
+  background: transparent;
+}
+
+#previewTouchArea:active {
+  cursor: grabbing;
+}
+
+#panel.preview-fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9998;
+  background: transparent;
+}
+
+#panel.preview-fullscreen iframe {
+  width: 100% !important;
+  height: 100% !important;
+}

@@ -544,3 +544,54 @@ body{
   outline:none !important;
 
 }
+
+/* =========================
+   LOCK RENDERER LAYOUT
+   ========================= */
+
+html,
+body {
+  width: 900px;
+  min-width: 900px;
+  height: 650px;
+  min-height: 650px;
+  overflow: hidden;
+}
+
+#bar {
+  width: 900px;
+  min-width: 900px;
+}
+
+.row {
+  flex-wrap: nowrap;
+}
+
+#wrap {
+  width: 900px;
+  min-width: 900px;
+  height: 100%;
+}
+
+.scene {
+  width: 900px;
+  min-width: 900px;
+  height: 650px;
+  min-height: 650px;
+}
+
+.viewer {
+  width: 80%;
+  min-width: 720px;
+  height: 80%;
+}
+
+.panel {
+  width: 100%;
+  min-width: 720px;
+}
+
+.panel iframe {
+  width: 100%;
+  min-width: 720px;
+}

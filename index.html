@@ -24,21 +24,20 @@ iframe {
   border: 0;
 }
 
-.background,
-.workshop {
+.background {
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-.background {
   z-index: 1;
 }
 
 .workshop {
   z-index: 2;
-  transform: scale(.5);
-  transform-origin: center;
+  left: 52%;
+  top: 48%;
+  width: 44%;
+  height: 50%;
+  transform: none;
 }
 
 .workshop-toggle,
@@ -62,6 +61,7 @@ iframe {
   top: 84%;
   background: transparent;
 }
+
 .workshop.closed {
   display: none;
 }
@@ -79,7 +79,7 @@ iframe {
 <iframe
   class="workshop"
   src="workshop/index.html"
-  title="Workshop">
+  title="Workshop Renderer">
 </iframe>
 
 <iframe

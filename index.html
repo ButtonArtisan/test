@@ -13,8 +13,9 @@
 html,
 body {
   margin: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100dvh;
+
   overflow: hidden;
   background: #000;
 }
@@ -37,9 +38,13 @@ iframe {
 
 .workshop {
   z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
   transform: scale(.5);
-  transform-origin: center;
-}
+  transform-origin: center center;
+}}
 
 .workshop-toggle,
 .save-tool {

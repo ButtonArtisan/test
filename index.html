@@ -107,9 +107,18 @@ iframe {
 window.addEventListener("message", event => {
   if (event.origin !== location.origin) return;
 
+  const workshop = document.querySelector(".workshop");
+
   if (event.data?.type === "toggle-workshop") {
-    document.querySelector(".workshop")
-      .classList.toggle("closed");
+    workshop.classList.toggle("closed");
+  }
+
+  if (event.data?.type === "preview-fullscreen") {
+    workshop.classList.add("preview-fullscreen");
+  }
+
+  if (event.data?.type === "preview-normal") {
+    workshop.classList.remove("preview-fullscreen");
   }
 });
 </script>

@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Code Editing Tool</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CodeSaver</title>
 
 <style>
 * {
@@ -12,97 +12,277 @@
 
 html,
 body {
+  width: 100%;
+  height: 100%;
   margin: 0;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
-  background: #000;
+  overscroll-behavior: none;
+  background: transparent;
 }
 
-iframe {
+body {
   position: fixed;
-  border: 0;
-}
-
-.background,
-.workshop {
   inset: 0;
+  font-family: Arial, sans-serif;
+  touch-action: none;
+}
+
+.wrap {
+  position: fixed;
+  top: 50%;
+  left: 50%;
   width: 100%;
-  height: 100%;
+  text-align: center;
+  transform: translate(-50%, -50%);
 }
 
-.background {
-  z-index: 1;
-}
-
-.workshop {
-  z-index: 2;
-  transform: scale(.5);
-  transform-origin: center;
-}
-
-.workshop-toggle,
-.save-tool {
-  left: 0;
-  right: 0;
-  margin-inline: auto;
-}
-
-.workshop-toggle {
-  z-index: 999;
-  width: 120px;
-  height: 44px;
-  top: 76%;
-}
-
-.save-tool {
-  z-index: 1000;
+#paste,
+#title,
+#notes {
   width: 160px;
-  height: 64px;
-  top: 84%;
+  height: 58px;
+  margin: 0 auto;
+  font: 900 18px Arial;
 }
 
-.workshop.closed {
+#paste {
+  padding: 0;
+  border: 3px solid #e32626;
+  border-radius: 8px;
+  background: transparent;
+  color: #e32626;
+}
+
+#saveForm {
+  margin: 0;
+  padding: 0;
+}
+
+#title {
   display: none;
+  padding: 0 8px;
+  border: 3px solid #1769ff;
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: white;
+  text-align: center;
+  font: 900 18px Arial;
+  caret-color: transparent;
+}
+
+#title::placeholder {
+  color: #1769ff;
+  opacity: 1;
+}
+
+#title.notes-mode {
+  border-color: #20d866;
+}
+
+#title.notes-mode::placeholder {
+  color: #20d866;
+}
+
+#notes {
+  display: none;
+  padding: 0;
+  border: 3px solid #20d866;
+  border-radius: 8px;
+  background: transparent;
+  color: #20d866;
+}
+
+#status {
+  margin-top: 16px;
+  color: #999;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
 }
 </style>
 </head>
 
 <body>
 
-<iframe
-  class="background"
-  src="main-background.html"
-  title="Main background">
-</iframe>
+<main class="wrap">
 
-<iframe
-  class="workshop"
-  src="workshop/index.html"
-  title="Workshop">
-</iframe>
+  <button id="paste" type="button">PASTE</button>
 
-<iframe
-  class="workshop-toggle"
-  src="toggle.html"
-  title="Toggle Workshop">
-</iframe>
+  <form id="saveForm">
+    <input
+      id="title"
+      type="text"
+      placeholder="TITLE"
+      autocomplete="off"
+      spellcheck="false"
+      enterkeyhint="done"
+    >
+  </form>
 
-<iframe
-  class="save-tool"
-  src="save/index.html"
-  title="Save Tool">
-</iframe>
+  <button id="notes" type="button">NOTES</button>
+
+  <div id="status"></div>
+
+</main>
 
 <script>
-window.addEventListener("message", event => {
-  if (event.origin !== location.origin) return;
+const pasteButton = document.querySelector("#paste");
+const saveForm = document.querySelector("#saveForm");
+const titleInput = document.querySelector("#title");
+const notesButton = document.querySelector("#notes");
+const status = document.querySelector("#status");
 
-  if (event.data?.type === "toggle-workshop") {
-    document.querySelector(".workshop")
-      .classList.toggle("closed");
+let hiddenCode = "";
+let previousTitle = "";
+let notesMode = false;
+
+function lockPagePosition(){
+  window.scrollTo(0, 0);
+
+  if(window.visualViewport){
+    window.visualViewport.scrollTo(0, 0);
   }
+}
+
+pasteButton.addEventListener("click", async () => {
+
+  try {
+    hiddenCode = await navigator.clipboard.readText();
+
+    if(!hiddenCode.trim()){
+      status.textContent = "CLIPBOARD EMPTY";
+      return;
+    }
+
+    pasteButton.style.display = "none";
+    titleInput.style.display = "block";
+    titleInput.placeholder = "TITLE";
+    titleInput.classList.remove("notes-mode");
+
+    lockPagePosition();
+
+    titleInput.focus({
+      preventScroll: true
+    });
+
+    lockPagePosition();
+
+    status.textContent = "";
+
+
 });
+
+notesButton.addEventListener("click", () => {
+
+  notesMode = true;
+
+  notesButton.style.display = "none";
+  titleInput.style.display = "block";
+  titleInput.value = "";
+  titleInput.placeholder = "NOTES";
+  titleInput.classList.add("notes-mode");
+
+  lockPagePosition();
+
+  titleInput.focus({
+    preventScroll: true
+  });
+
+  lockPagePosition();
+
+  status.textContent = "";
+});
+
+titleInput.addEventListener("focus", () => {
+  lockPagePosition();
+});
+
+saveForm.addEventListener("submit", async event => {
+
+  event.preventDefault();
+
+  let filename;
+
+  if(notesMode){
+
+    filename = `${previousTitle} (notes).txt`;
+
+  }else{
+
+    const cleanTitle = titleInput.value.trim()
+      .replace(/[<>:"/\\|?*]/g, "")
+      .replace(/\s+/g, "-") || "saved-code";
+
+    previousTitle = cleanTitle;
+    filename = `${cleanTitle}.txt`;
+  }
+
+  const file = new File(
+    [hiddenCode],
+    filename,
+    {type: "text/plain"}
+  );
+
+  try {
+
+    if(
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({files: [file]})
+    ){
+
+      await navigator.share({
+        files: [file],
+        title: filename
+      });
+
+    }else{
+
+      downloadFile(file);
+    }
+
+  }catch{
+
+    downloadFile(file);
+  }
+
+  notesMode = false;
+  titleInput.value = "";
+  titleInput.placeholder = "TITLE";
+  titleInput.classList.remove("notes-mode");
+
+  titleInput.style.display = "none";
+  notesButton.style.display = "block";
+  status.textContent = "";
+
+  lockPagePosition();
+});
+
+function downloadFile(file){
+
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = file.name;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+window.addEventListener("scroll", lockPagePosition);
+
+if(window.visualViewport){
+
+  window.visualViewport.addEventListener(
+    "scroll",
+    lockPagePosition
+  );
+}
 </script>
 
 </body>
